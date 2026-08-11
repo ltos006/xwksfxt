@@ -1,0 +1,77 @@
+version: "3.8"
+
+services:
+  # =============================================
+  # 后端：Django + DRF + Gunicorn
+  # =============================================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: followup-backend
+    restart: always
+    environment:
+      - DEBUG=False
+      - SECRET_KEY=${SECRET_KEY}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
+      - DB_ENGINE=django.db.backends.mysql
+      - DB_NAME=${DB_NAME:-followup_db}
+      - DB_USER=${DB_USER:-followup_user}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=mysql
+      - DB_PORT=3306
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - followup-net
+
+  # =============================================
+  # 前端：Vue 3 + Nginx
+  # =============================================
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    container_name: followup-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - followup-net
+
+  # =============================================
+  # 数据库：MySQL 8.0
+  # =============================================
+  mysql:
+    image: mysql:8.0
+    container_name: followup-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME:-followup_db}
+      MYSQL_USER: ${DB_USER:-followup_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - followup-net
+
+volumes:
+  static_volume:
+  media_volume:
+  mysql_data:
+
+networks:
+  followup-net:
+    driver: bridge

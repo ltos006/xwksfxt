@@ -1,0 +1,75 @@
+version: "3.8"
+
+services:
+  # =============================================
+  # 后端：Django + DRF + Gunicorn
+  # =============================================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: followup-backend
+    restart: unless-stopped
+    environment:
+      - DEBUG=False
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+      - DB_ENGINE=${DB_ENGINE:-sqlite}
+      - DB_NAME=${DB_NAME:-db.sqlite3}
+      - DB_USER=${DB_USER:-}
+      - DB_PASSWORD=${DB_PASSWORD:-}
+      - DB_HOST=${DB_HOST:-}
+      - DB_PORT=${DB_PORT:-3306}
+    volumes:
+      - sqlite_data:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    networks:
+      - followup-net
+
+  # =============================================
+  # 前端：Vue 3 + Nginx
+  # =============================================
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    container_name: followup-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - followup-net
+
+  # =============================================
+  # 数据库（可选，生产环境推荐）
+  # =============================================
+  # 如果要使用 MySQL，取消下面注释，并设置环境变量 DB_ENGINE=mysql
+  # mysql:
+  #   image: mysql:8.0
+  #   container_name: followup-mysql
+  #   restart: unless-stopped
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123}
+  #     MYSQL_DATABASE: followup_db
+  #     MYSQL_USER: followup_user
+  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD:-dbpassword123}
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  #   ports:
+  #     - "3306:3306"
+  #   networks:
+  #     - followup-net
+
+volumes:
+  sqlite_data:
+  static_volume:
+  media_volume:
+  # mysql_data:
+
+networks:
+  followup-net:
+    driver: bridge

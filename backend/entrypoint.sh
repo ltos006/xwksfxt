@@ -9,11 +9,23 @@ if [ -n "$DJANGO_SUPERUSER_USERNAME" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ]; t
     echo "检查超级管理员用户..."
     python manage.py shell -c "
 from users.models import User
-if not User.objects.filter(username='$DJANGO_SUPERUSER_USERNAME', role='admin').exists():
-    User.objects.create_superuser(username='$DJANGO_SUPERUSER_USERNAME', password='$DJANGO_SUPERUSER_PASSWORD', phone='13800138000')
+user, created = User.objects.update_or_create(
+    username='$DJANGO_SUPERUSER_USERNAME',
+    role='admin',
+    defaults={
+        'is_staff': True,
+        'is_superuser': True,
+        'phone': '13800138000',
+    }
+)
+if created:
+    user.set_password('$DJANGO_SUPERUSER_PASSWORD')
+    user.save()
     print('已创建管理员用户: $DJANGO_SUPERUSER_USERNAME')
 else:
-    print('管理员用户已存在，跳过创建')
+    user.set_password('$DJANGO_SUPERUSER_PASSWORD')
+    user.save()
+    print('管理员用户已存在，密码已更新: $DJANGO_SUPERUSER_USERNAME')
 "
 fi
 

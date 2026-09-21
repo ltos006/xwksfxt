@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# 确保数据目录存在（SQLite 数据库文件需要）
+mkdir -p /var/data
+
 # 创建/更新超级管理员
 if [ -n "$DJANGO_SUPERUSER_USERNAME" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ]; then
     echo "检查超级管理员用户..."

@@ -4,7 +4,10 @@ set -e
 # 确保数据目录存在（SQLite 数据库文件需要）
 mkdir -p /var/data
 
-# 创建/更新超级管理员
+# 先执行数据库迁移，确保表存在
+python manage.py migrate --noinput
+
+# 创建/更新超级管理员（必须在 migrate 之后，否则 users 表不存在）
 if [ -n "$DJANGO_SUPERUSER_USERNAME" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ]; then
     echo "检查超级管理员用户..."
     python manage.py shell -c "
@@ -28,8 +31,6 @@ else:
     print('管理员用户已存在，密码已更新: $DJANGO_SUPERUSER_USERNAME')
 "
 fi
-
-python manage.py migrate --noinput
 
 # 收集静态文件
 echo "收集静态文件..."

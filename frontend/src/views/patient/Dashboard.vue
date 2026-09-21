@@ -142,22 +142,34 @@
         </el-form-item>
 
         <!-- 数值填写 -->
-        <el-form-item v-if="answerForm.taskTypes.includes('number')" label="数值填写">
-          <div style="width: 100%">
-            <div
-              v-for="field in answerForm.numberFields"
-              :key="field"
-              style="margin-bottom: 10px; display: flex; align-items: center"
-            >
-              <span style="width: 150px">{{ field }}：</span>
-              <el-input-number
-                v-model="answerForm.numberValues[field]"
-                :controls="false"
-                style="width: 200px"
-              />
-            </div>
-          </div>
-        </el-form-item>
+	        <el-form-item v-if="answerForm.taskTypes.includes('number')" label="数值填写">
+	          <div style="width: 100%">
+	            <div
+	              v-for="field in answerForm.numberFields"
+	              :key="field"
+	              style="margin-bottom: 10px; display: flex; align-items: center"
+	            >
+	              <span style="width: 150px">{{ field }}：</span>
+	              <el-select
+	                v-model="answerForm.numberValues[field]"
+	                placeholder="请选择数值"
+	                style="width: 200px"
+	                clearable
+	              >
+	                <el-option label="1/4（四分之一）" :value="0.25" />
+	                <el-option label="1/2（二分之一）" :value="0.5" />
+	                <el-option label="1" :value="1" />
+	                <el-option label="2" :value="2" />
+	                <el-option label="3" :value="3" />
+	                <el-option label="4" :value="4" />
+	                <el-option label="5" :value="5" />
+	                <el-option label="6" :value="6" />
+	                <el-option label="8" :value="8" />
+	                <el-option label="10" :value="10" />
+	              </el-select>
+	            </div>
+	          </div>
+	        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="showAnswerDialog = false">取消</el-button>
@@ -250,7 +262,7 @@ const handleAnswerTask = (row) => {
 
   const numberValues = {}
   numberFields.forEach(field => {
-    numberValues[field] = 0
+    numberValues[field] = null
   })
 
   answerForm.value = {

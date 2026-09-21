@@ -113,37 +113,6 @@
               </el-table>
             </el-card>
           </el-tab-pane>
-
-          <el-tab-pane label="任务管理" name="tasks">
-            <el-card>
-              <el-table :data="allTasks" style="width: 100%">
-                <el-table-column prop="patientName" label="患者" />
-                <el-table-column prop="taskTitle" label="任务名称" />
-                <el-table-column prop="deadline" label="截止时间" />
-                <el-table-column prop="status" label="状态">
-                  <template #default="{ row }">
-                    <el-tag :type="getTaskStatusType(row.status)">
-                      {{ getTaskStatusText(row.status) }}
-                    </el-tag>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="submitTime" label="提交时间" />
-                <el-table-column label="操作">
-                  <template #default="{ row }">
-                    <el-button
-                      link
-                      type="primary"
-                      size="small"
-                      @click="handleViewFeedback(row)"
-                      :disabled="row.status === TASK_STATUS.NOT_STARTED"
-                    >
-                      查看反馈
-                    </el-button>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </el-card>
-          </el-tab-pane>
         </el-tabs>
       </el-main>
     </el-container>
@@ -167,7 +136,7 @@
         </el-form-item>
         <el-form-item label="随访类型">
           <el-radio-group v-model="taskForm.followupType">
-            <el-radio value="single">单次随��</el-radio>
+            <el-radio value="single">单次随访</el-radio>
             <el-radio value="multiple">多次随访</el-radio>
           </el-radio-group>
         </el-form-item>
@@ -246,6 +215,38 @@
             <el-text v-if="taskForm.numberFields.length === 0" type="info" size="small">
               请添加至少一个数值项，患者将填写对应的数值
             </el-text>
+
+            <!-- 症状分类快捷列表 -->
+            <div style="margin-top: 16px; border: 1px solid var(--el-border-color-light); border-radius: 6px; padding: 12px">
+              <div style="font-size: 13px; color: var(--el-text-color-secondary); margin-bottom: 10px">
+                常见症状分类（点击快速添加）：
+              </div>
+              <el-space wrap>
+                <el-popover
+                  v-for="category in symptomCategories"
+                  :key="category.name"
+                  placement="bottom-start"
+                  :width="280"
+                  trigger="click"
+                >
+                  <template #reference>
+                    <el-button size="small">{{ category.name }}</el-button>
+                  </template>
+                  <el-space wrap>
+                    <el-button
+                      v-for="symptom in category.symptoms"
+                      :key="symptom"
+                      size="small"
+                      :type="taskForm.numberFields.includes(symptom) ? 'primary' : 'default'"
+                      :disabled="taskForm.numberFields.includes(symptom)"
+                      @click="addQuickSymptom(symptom)"
+                    >
+                      {{ symptom }}
+                    </el-button>
+                  </el-space>
+                </el-popover>
+              </el-space>
+            </div>
           </div>
         </el-form-item>
       </el-form>
@@ -265,9 +266,7 @@ import {
   BINDING_STATUS,
   BINDING_STATUS_TEXT,
   BINDING_STATUS_TYPE,
-  TASK_STATUS,
-  TASK_STATUS_TEXT,
-  TASK_STATUS_TYPE
+  SYMPTOM_CATEGORIES
 } from '@/utils/enum'
 import { doctorAPI } from '@/api'
 
@@ -317,10 +316,6 @@ onMounted(async () => {
           bindDate: p.bind_date || p.created_at,
           completionRate: p.completion_rate || 0
         }))
-
-        // 获取医生的所有任务
-        const tasks = await doctorAPI.getTasks(user.profile_id)
-        allTasks.value = tasks
       }
     } catch (error) {
       console.error('获取数据失败:', error)
@@ -333,14 +328,13 @@ const statistics = computed(() => ({
   patientCount: patients.value.length,
   pendingBindings: bindingRequests.value.filter(b => b.status === BINDING_STATUS.PENDING).length,
   pendingFeedbacks: 0,  // 待处理反馈暂无功能
-  incompleteTasks: allTasks.value.filter(t => t.status !== 'completed').length
+  incompleteTasks: 0
 }))
 
 const bindingRequests = ref([])
 
 const patients = ref([])
 
-const allTasks = ref([])
 
 const taskForm = reactive({
   title: '',
@@ -354,6 +348,7 @@ const taskForm = reactive({
 
 const surgeryDate = ref(new Date()) // 模拟手术日期，实际应该从患者数据中获取
 const newNumberField = ref('') // 新数值项输入
+const symptomCategories = ref(SYMPTOM_CATEGORIES) // 症状分类列表
 
 const filteredPatients = computed(() => {
   if (!searchKeyword.value) return patients.value
@@ -364,8 +359,6 @@ const filteredPatients = computed(() => {
 
 const getBindingStatusText = (status) => BINDING_STATUS_TEXT[status]
 const getBindingStatusType = (status) => BINDING_STATUS_TYPE[status]
-const getTaskStatusText = (status) => TASK_STATUS_TEXT[status]
-const getTaskStatusType = (status) => TASK_STATUS_TYPE[status]
 
 const getProgressColor = (percentage) => {
   if (percentage < 60) return '#F56C6C'
@@ -466,6 +459,13 @@ const addNumberField = () => {
   newNumberField.value = ''
 }
 
+const addQuickSymptom = (symptom) => {
+  if (taskForm.numberFields.includes(symptom)) {
+    return
+  }
+  taskForm.numberFields.push(symptom)
+}
+
 const removeNumberField = (index) => {
   taskForm.numberFields.splice(index, 1)
 }
@@ -542,10 +542,6 @@ const handleSubmitTask = async () => {
     console.error('发布任务失败:', error)
     ElMessage.error(typeof error === 'string' ? error : '发布任务失败')
   }
-}
-
-const handleViewFeedback = (row) => {
-  ElMessage.info(`查看 ${row.patientName} 的任务反馈`)
 }
 
 const handleLogout = () => {

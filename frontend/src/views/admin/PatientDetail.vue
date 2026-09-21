@@ -122,41 +122,47 @@
           </template>
 
           <el-empty v-if="submissions.length === 0" description="暂无随访记录" />
-          <el-timeline v-else>
-            <el-timeline-item
-              v-for="submission in submissions"
-              :key="submission.id"
-              :timestamp="formatDateTime(submission.submitted_at)"
-              placement="top"
-            >
-              <el-card>
-                <h4>{{ submission.task_title }}</h4>
-                <p style="color: #666; margin: 8px 0">{{ submission.task_content }}</p>
+          <el-table v-else :data="submissions" style="width: 100%" size="small">
+            <el-table-column prop="task_title" label="任务" width="160" show-overflow-tooltip />
+            <el-table-column label="类型" width="100">
+              <template #default="{ row }">
                 <el-tag
-                  v-for="type in submission.task_types"
+                  v-for="type in row.task_types"
                   :key="type"
                   size="small"
-                  style="margin-right: 5px"
+                  style="margin-right: 4px"
                 >
                   {{ getTaskTypeText(type) }}
                 </el-tag>
-                <div v-if="submission.content" style="margin-top: 12px">
-                  <strong>提交内容：</strong>{{ submission.content }}
+              </template>
+            </el-table-column>
+            <el-table-column label="提交内容" min-width="200">
+              <template #default="{ row }">
+                <div v-if="row.submission_data?.text_response" style="margin-bottom: 4px">
+                  <span style="color: #999">文字：</span>{{ row.submission_data.text_response }}
                 </div>
-                <div v-if="submission.images && submission.images.length > 0" style="margin-top: 12px">
-                  <strong>附件图片：</strong>
-                  <el-image
-                    v-for="(img, idx) in submission.images"
-                    :key="idx"
-                    :src="img"
-                    :preview-src-list="submission.images"
-                    style="width: 100px; height: 100px; margin-right: 8px"
-                    fit="cover"
-                  />
+                <div v-if="row.submission_data?.number_values && Object.keys(row.submission_data.number_values).length > 0">
+                  <span style="color: #999">数值：</span>
+                  <template v-for="(value, key) in row.submission_data.number_values" :key="key">
+                    <el-tag type="info" size="small" style="margin-right: 4px">{{ key }}: {{ value }}</el-tag>
+                  </template>
                 </div>
-              </el-card>
-            </el-timeline-item>
-          </el-timeline>
+                <span v-if="!row.submission_data?.text_response && (!row.submission_data?.number_values || Object.keys(row.submission_data.number_values).length === 0)" style="color: #ccc">-</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="提交时间" width="160">
+              <template #default="{ row }">
+                {{ formatDateTime(row.submitted_at) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="80">
+              <template #default="{ row }">
+                <el-button link type="primary" size="small" @click="handleViewSubmissionDetail(row)">
+                  详情
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
         </el-card>
       </el-main>
     </el-container>
@@ -207,19 +213,28 @@
           <el-descriptions-item label="提交时间">
             {{ formatDateTime(currentSubmission.submitted_at) }}
           </el-descriptions-item>
-          <el-descriptions-item label="提交内容">
-            {{ currentSubmission.content || '无' }}
+          <el-descriptions-item label="文字描述">
+            {{ currentSubmission.submission_data?.text_response || '无' }}
+          </el-descriptions-item>
+          <el-descriptions-item label="数值填写">
+            <template v-if="currentSubmission.submission_data?.number_values && Object.keys(currentSubmission.submission_data.number_values).length > 0">
+              <div v-for="(value, key) in currentSubmission.submission_data.number_values" :key="key" style="margin: 3px 0">
+                <el-tag type="info" size="small" style="margin-right: 8px">{{ key }}</el-tag>
+                {{ value }}
+              </div>
+            </template>
+            <span v-else>无</span>
           </el-descriptions-item>
           <el-descriptions-item label="附件图片">
             <el-image
-              v-for="(img, idx) in currentSubmission.images"
+              v-for="(img, idx) in currentSubmission.submission_data?.image_urls || []"
               :key="idx"
               :src="img"
-              :preview-src-list="currentSubmission.images"
+              :preview-src-list="currentSubmission.submission_data?.image_urls || []"
               style="width: 100px; height: 100px; margin-right: 8px"
               fit="cover"
             />
-            <span v-if="!currentSubmission.images || currentSubmission.images.length === 0">无</span>
+            <span v-if="!currentSubmission.submission_data?.image_urls || currentSubmission.submission_data.image_urls.length === 0">无</span>
           </el-descriptions-item>
         </el-descriptions>
       </div>

@@ -13,12 +13,14 @@ services:
     environment:
       - DEBUG=False
       - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
-      - DB_ENGINE=${DB_ENGINE:-sqlite}
+      - DB_ENGINE=${DB_ENGINE:-django.db.backends.sqlite3}
       - DB_NAME=${DB_NAME:-db.sqlite3}
       - DB_USER=${DB_USER:-}
       - DB_PASSWORD=${DB_PASSWORD:-}
       - DB_HOST=${DB_HOST:-}
       - DB_PORT=${DB_PORT:-3306}
+      - DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME:-yhddwmnn}
+      - DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD:-Zxj18354364457?}
     volumes:
       - sqlite_data:/app
       - static_volume:/app/static

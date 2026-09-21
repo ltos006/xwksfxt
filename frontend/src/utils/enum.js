@@ -64,3 +64,39 @@ export const DOCTOR_AUDIT_STATUS_TYPE = {
   [DOCTOR_AUDIT_STATUS.APPROVED]: 'success',
   [DOCTOR_AUDIT_STATUS.REJECTED]: 'danger'
 }
+
+// 症状分类列表（用于数值项快速选择）
+export const SYMPTOM_CATEGORIES = [
+  {
+    name: '疼痛类',
+    symptoms: ['疼痛评分', '止痛药剂量', '疼痛频率', '疼痛持续时间']
+  },
+  {
+    name: '伤口类',
+    symptoms: ['伤口愈合评分', '红肿程度', '渗液量', '换药次数']
+  },
+  {
+    name: '生命体征',
+    symptoms: ['体温', '心率', '血压(收缩压)', '血压(舒张压)', '血氧饱和度']
+  },
+  {
+    name: '活动能力',
+    symptoms: ['行走距离', '关节活动度', '日常活动评分', '运动时长']
+  },
+  {
+    name: '用药类',
+    symptoms: ['服药次数', '漏服次数', '不良反应次数', '药量(mg)']
+  },
+  {
+    name: '饮食消化',
+    symptoms: ['进食量评分', '饮水量(ml)', '排便次数', '排便形态评分']
+  },
+  {
+    name: '睡眠心理',
+    symptoms: ['睡眠时长(h)', '入睡困难评分', '焦虑评分', '抑郁评分']
+  },
+  {
+    name: '其他',
+    symptoms: ['体重(kg)', '体温(℃)', '尿量(ml)', '引流液量(ml)']
+  }
+]

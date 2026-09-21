@@ -198,6 +198,38 @@
             <el-text v-if="editForm.numberFields.length === 0" type="info" size="small">
               请添加至少一个数值项，患者将填写对应的数值
             </el-text>
+
+            <!-- 症状分类快捷列表 -->
+            <div style="margin-top: 16px; border: 1px solid var(--el-border-color-light); border-radius: 6px; padding: 12px">
+              <div style="font-size: 13px; color: var(--el-text-color-secondary); margin-bottom: 10px">
+                常见症状分类（点击快速添加）：
+              </div>
+              <el-space wrap>
+                <el-popover
+                  v-for="category in symptomCategories"
+                  :key="category.name"
+                  placement="bottom-start"
+                  :width="280"
+                  trigger="click"
+                >
+                  <template #reference>
+                    <el-button size="small">{{ category.name }}</el-button>
+                  </template>
+                  <el-space wrap>
+                    <el-button
+                      v-for="symptom in category.symptoms"
+                      :key="symptom"
+                      size="small"
+                      :type="editForm.numberFields.includes(symptom) ? 'primary' : 'default'"
+                      :disabled="editForm.numberFields.includes(symptom)"
+                      @click="addQuickSymptom(symptom)"
+                    >
+                      {{ symptom }}
+                    </el-button>
+                  </el-space>
+                </el-popover>
+              </el-space>
+            </div>
           </div>
         </el-form-item>
       </el-form>
@@ -214,6 +246,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { doctorAPI } from '@/api'
+import { SYMPTOM_CATEGORIES } from '@/utils/enum'
 
 const router = useRouter()
 const loading = ref(false)
@@ -224,6 +257,7 @@ const currentTask = ref(null)
 const editForm = ref(null)
 const selectedTasks = ref([])
 const newNumberField = ref('')
+const symptomCategories = ref(SYMPTOM_CATEGORIES)
 
 const statusMap = {
   not_started: { text: '未开始', type: 'info' },
@@ -360,6 +394,13 @@ const addNumberField = () => {
 
   editForm.value.numberFields.push(newNumberField.value.trim())
   newNumberField.value = ''
+}
+
+const addQuickSymptom = (symptom) => {
+  if (editForm.value.numberFields.includes(symptom)) {
+    return
+  }
+  editForm.value.numberFields.push(symptom)
 }
 
 const removeNumberField = (index) => {

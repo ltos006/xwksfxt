@@ -5,14 +5,18 @@ __pycache__/
 venv/
 .venv/
 env/
+backend/venv/
 
 # Django
 *.log
 db.sqlite3
-media/
+db.sqlite3-journal
+backend/media/
+backend/static/
 
 # Node
 node_modules/
+frontend/node_modules/
 frontend/dist/
 npm-debug.log*
 
@@ -29,3 +33,8 @@ Thumbs.db
 .git/
 .gitignore
 *.md
+
+# 生成产物/本地文件
+.env
+merge_django_source.py
+软著_Django源代码.txt

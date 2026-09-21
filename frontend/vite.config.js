@@ -6,6 +6,8 @@ import { fileURLToPath, URL } from 'node:url'
 const API_BASE = 'http://127.0.0.1:8000'
 
 export default defineConfig({
+  // 生产构建后由 Django/WhiteNoise 在 /static/frontend/ 下提供静态资源
+  base: '/static/frontend/',
   plugins: [vue()],
   resolve: {
     alias: {

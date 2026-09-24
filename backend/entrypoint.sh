@@ -4,6 +4,19 @@ set -e
 # 确保媒体文件目录存在
 mkdir -p /var/data/media
 
+# 调试：打印当前数据库连接信息
+echo "========================================"
+echo "数据库连接信息:"
+python -c "
+import os
+print('DB_ENGINE:', os.environ.get('DB_ENGINE', '未设置'))
+print('DB_HOST:', os.environ.get('DB_HOST', '未设置'))
+print('DB_NAME:', os.environ.get('DB_NAME', '未设置'))
+print('DB_USER:', os.environ.get('DB_USER', '未设置'))
+print('DB_PORT:', os.environ.get('DB_PORT', '未设置'))
+"
+echo "========================================"
+
 # 先执行数据库迁移，确保表存在
 python manage.py migrate --noinput
 

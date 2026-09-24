@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-# 确保数据目录存在（SQLite 数据库文件需要）
-mkdir -p /var/data
+# 确保媒体文件目录存在
+mkdir -p /var/data/media
 
 # 先执行数据库迁移，确保表存在
 python manage.py migrate --noinput

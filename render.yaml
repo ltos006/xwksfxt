@@ -3,7 +3,7 @@ services:
     name: postoperative-followup
     env: docker
     region: singapore
-    plan: starter               # free 不支持持久磁盘
+    plan: starter
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /healthz
@@ -12,18 +12,42 @@ services:
       - key: DEBUG
         value: "False"
       - key: SECRET_KEY
-        sync: false             # 在 Render 控制台单独填，不入库
+        sync: false
       - key: ALLOWED_HOSTS
         value: "*"
       - key: DJANGO_SUPERUSER_USERNAME
         value: admin
       - key: DJANGO_SUPERUSER_PASSWORD
-        sync: false             # 在 Render 控制台单独填
+        sync: false
+      - key: DB_ENGINE
+        value: django.db.backends.postgresql
       - key: DB_NAME
-        value: /var/data/db.sqlite3
+        fromDatabase:
+          name: postgres-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: postgres-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: postgres-db
+          property: password
+      - key: DB_HOST
+        fromDatabase:
+          name: postgres-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: postgres-db
+          property: port
       - key: MEDIA_ROOT
         value: /var/data/media
     disk:
-      name: sqlite-data
+      name: media-data
       mountPath: /var/data
       sizeGB: 1
+
+databases:
+  - name: postgres-db
+    plan: free

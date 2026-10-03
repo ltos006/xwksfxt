@@ -15,22 +15,22 @@
       </el-header>
       <el-main>
         <el-row :gutter="20">
-          <el-col :span="6">
+          <el-col :xs="12" :sm="12" :md="6">
             <el-card>
               <el-statistic title="我的患者" :value="statistics.patientCount" />
             </el-card>
           </el-col>
-          <el-col :span="6">
+          <el-col :xs="12" :sm="12" :md="6">
             <el-card>
               <el-statistic title="待审核绑定" :value="statistics.pendingBindings" />
             </el-card>
           </el-col>
-          <el-col :span="6">
+          <el-col :xs="12" :sm="12" :md="6">
             <el-card>
               <el-statistic title="待处理反馈" :value="statistics.pendingFeedbacks" />
             </el-card>
           </el-col>
-          <el-col :span="6">
+          <el-col :xs="12" :sm="12" :md="6">
             <el-card>
               <el-statistic title="未完成任务" :value="statistics.incompleteTasks" />
             </el-card>

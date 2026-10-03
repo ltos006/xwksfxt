@@ -12,17 +12,17 @@
       </el-header>
       <el-main>
         <el-row :gutter="20">
-          <el-col :span="8">
+          <el-col :xs="12" :sm="8" :md="8">
             <el-card>
               <el-statistic title="待完成任务" :value="statistics.pendingTasks" />
             </el-card>
           </el-col>
-          <el-col :span="8">
+          <el-col :xs="12" :sm="8" :md="8">
             <el-card>
               <el-statistic title="已完成任务" :value="statistics.completedTasks" />
             </el-card>
           </el-col>
-          <el-col :span="8">
+          <el-col :xs="12" :sm="8" :md="8">
             <el-card>
               <el-statistic title="逾期任务" :value="statistics.overdueTasks" />
             </el-card>

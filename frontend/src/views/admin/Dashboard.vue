@@ -12,22 +12,22 @@
       </el-header>
       <el-main>
         <el-row :gutter="20">
-          <el-col :span="6">
+          <el-col :xs="12" :sm="12" :md="6">
             <el-card class="stat-card">
               <el-statistic title="总用户数" :value="statistics.totalUsers" />
             </el-card>
           </el-col>
-          <el-col :span="6">
+          <el-col :xs="12" :sm="12" :md="6">
             <el-card class="stat-card">
               <el-statistic title="医生数" :value="statistics.doctorCount" />
             </el-card>
           </el-col>
-          <el-col :span="6">
+          <el-col :xs="12" :sm="12" :md="6">
             <el-card class="stat-card">
               <el-statistic title="患者数" :value="statistics.patientCount" />
             </el-card>
           </el-col>
-          <el-col :span="6">
+          <el-col :xs="12" :sm="12" :md="6">
             <el-card class="stat-card">
               <el-statistic title="医患绑定数" :value="statistics.bindingCount" />
             </el-card>

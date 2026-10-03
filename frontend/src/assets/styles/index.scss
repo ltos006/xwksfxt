@@ -16,3 +16,143 @@ a {
   text-decoration: none;
   color: inherit;
 }
+
+@media (max-width: 768px) {
+  html,
+  body,
+  #app {
+    min-height: 100%;
+    height: auto;
+    overflow-x: hidden;
+  }
+
+  .dashboard .el-container > .el-header {
+    height: auto !important;
+    min-height: 60px;
+    padding: 8px 14px;
+  }
+
+  .dashboard .header-content {
+    height: auto !important;
+    min-height: 44px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .dashboard .header-content h2 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.4;
+  }
+
+  .dashboard .header-content > div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dashboard .header-content > div > span {
+    margin-right: 0 !important;
+  }
+
+  .dashboard .el-container > .el-main {
+    padding: 12px !important;
+  }
+
+  .task-management {
+    padding: 12px !important;
+  }
+
+  .el-row {
+    row-gap: 12px;
+  }
+
+  .el-card__body {
+    padding: 14px;
+  }
+
+  .el-statistic__head {
+    font-size: 13px;
+  }
+
+  .el-statistic__content {
+    font-size: 22px;
+  }
+
+  .el-tabs__nav-wrap {
+    overflow-x: auto;
+  }
+
+  .el-tabs__nav {
+    white-space: nowrap;
+  }
+
+  .el-table {
+    max-width: 100%;
+  }
+
+  .el-dialog {
+    width: calc(100% - 24px) !important;
+    margin: 12px auto !important;
+  }
+
+  .el-dialog__body {
+    max-height: calc(100dvh - 160px);
+    overflow-y: auto;
+  }
+
+  .el-dialog .el-form-item {
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .el-dialog .el-form-item__label {
+    width: 100% !important;
+    justify-content: flex-start;
+  }
+
+  .el-dialog .el-form-item__content {
+    margin-left: 0 !important;
+  }
+
+  .el-dialog .el-select,
+  .el-dialog .el-date-editor,
+  .el-dialog .el-input {
+    max-width: 100%;
+  }
+
+  .login-container {
+    padding: 16px;
+  }
+
+  .login-card {
+    width: 100% !important;
+    max-width: 400px;
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .el-button {
+    min-height: 38px;
+  }
+
+  .el-tabs__item {
+    padding: 0 12px;
+    font-size: 14px;
+  }
+
+  .el-card__header {
+    padding: 12px 14px;
+  }
+
+  .el-card__header > div {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .el-card__header .el-input {
+    width: 100% !important;
+  }
+}

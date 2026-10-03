@@ -1,3 +1,4 @@
+from django.db.models import Count, Q
 from rest_framework import serializers
 from .models import Doctor
 from patients.models import Patient
@@ -18,11 +19,12 @@ class PatientSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
     phone = serializers.CharField(source='user.phone', read_only=True)
     binding_status = serializers.SerializerMethodField()
+    completion_rate = serializers.SerializerMethodField()
 
     class Meta:
         model = Patient
         fields = ['id', 'username', 'phone', 'real_name', 'id_card', 'gender', 'age',
-                  'surgery_type', 'surgery_date', 'binding_status', 'created_at']
+                  'surgery_type', 'surgery_date', 'binding_status', 'completion_rate', 'created_at']
 
     def get_binding_status(self, obj):
         request = self.context.get('request')
@@ -34,6 +36,23 @@ class PatientSerializer(serializers.ModelSerializer):
             except Binding.DoesNotExist:
                 return None
         return None
+
+    def get_completion_rate(self, obj):
+        doctor = self.context.get('doctor')
+        if doctor is None:
+            return 0
+
+        task_counts = FollowupTask.objects.filter(
+            doctor=doctor,
+            patient=obj,
+        ).aggregate(
+            total=Count('id'),
+            completed=Count('id', filter=Q(status='completed')),
+        )
+        total = task_counts['total']
+        if not total:
+            return 0
+        return round(task_counts['completed'] * 100 / total)
 
 
 class BindingSerializer(serializers.ModelSerializer):
